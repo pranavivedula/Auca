@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auca — l'oie du Parc Phœnix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#5FB8E0;
+    --sky-bottom:#BFE8F5;
+    --palm:#3E7A4E;
+    --palm-dark:#2E5C3A;
+    --sand:#F3E3B8;
+    --terracotta:#E0723A;
+    --terracotta-dark:#C15A2A;
+    --shell:#FBF3E4;
+    --shell-dark:#EAD9B5;
+    --ink:#2C3B3A;
+    --ice:#AEE6F2;
+    --ice-dark:#6FC3DA;
+    --gold:#F2B33D;
+    --pt-red:#D9503F;
+    --happy:#7FBF6B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, #fff6de 0%, transparent 40%),
+      linear-gradient(180deg, #FFD98A 0%, #F3B65C 30%, #EDE0B8 65%, #DCE9C8 100%);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:24px 14px 60px;
+  }
+  h1.brand{
+    font-family:'Baloo 2', sans-serif;
+    font-size:clamp(2.4rem, 8vw, 3.6rem);
+    color:var(--terracotta-dark);
+    margin:6px 0 0;
+    letter-spacing:1px;
+    text-shadow: 3px 3px 0 var(--shell);
+  }
+  .subtitle{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:600;
+    color:var(--palm-dark);
+    margin:0 0 18px;
+    font-size:1rem;
+    letter-spacing:0.5px;
+  }
+
+  /* ---- Console Tamagotchi ---- */
+  .console{
+    width:min(420px, 94vw);
+    background:linear-gradient(160deg, var(--shell) 0%, var(--shell-dark) 100%);
+    border-radius:46px;
+    padding:20px 20px 26px;
+    box-shadow: 0 18px 0 rgba(150,110,60,0.25), 0 22px 40px rgba(60,30,10,0.35);
+    border:3px solid #d8c393;
+    position:relative;
+  }
+  .console:before{
+    content:"";
+    position:absolute;
+    top:10px; left:50%; transform:translateX(-50%);
+    width:70px; height:8px;
+    background:#d8c393;
+    border-radius:6px;
+    opacity:0.6;
+  }
+
+  .screen-frame{
+    background:#1c3b3e;
+    border-radius:26px;
+    padding:10px;
+    margin-top:14px;
+    box-shadow: inset 0 0 0 4px #0f2426;
+  }
+  .screen{
+    position:relative;
+    width:100%;
+    aspect-ratio: 4/3.1;
+    border-radius:18px;
+    overflow:hidden;
+    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%, #E4D79A 62%, #d8c584 100%);
+  }
+
+  /* HUD */
+  .hud{
+    position:absolute;
+    top:8px; left:8px; right:8px;
+    display:flex;
+    justify-content:space-between;
+    font-family:'Baloo 2', sans-serif;
+    font-size:0.72rem;
+    z-index:5;
+  }
+  .pill{
+    background:rgba(255,255,255,0.85);
+    border-radius:20px;
+    padding:4px 10px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.15);
+    font-weight:700;
+    color:var(--ink);
+  }
+  .hunger-bar-wrap{
+    position:absolute;
+    top:34px; left:8px; right:8px;
+    z-index:5;
+    background:rgba(255,255,255,0.6);
+    border-radius:10px;
+    height:10px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  }
+  .hunger-bar{
+    height:100%;
+    width:100%;
+    background:linear-gradient(90deg, var(--happy), #b7e08a);
+    transition:width 0.6s ease, background 0.6s ease;
+  }
+
+  /* Scene decor */
+  .palm{
+    position:absolute;
+    bottom:36%;
+    width:26px;
+  }
+  .cloud{
+    position:absolute;
+    background:white;
+    opacity:0.85;
+    border-radius:50px;
+  }
+  .pond{
+    position:absolute;
+    left:50%;
+    bottom:8%;
+    transform:translateX(-50%);
+    width:64%;
+    height:14%;
+    background:#8fd2e8;
+    border-radius:50%;
+    box-shadow: inset 0 -4px 8px rgba(0,90,120,0.25);
+  }
+
+  .goose-wrap{
+    position:absolute;
+    left:50%;
+    bottom:16%;
+    transform:translate(-50%,0);
+    width:120px;
+    z-index:4;
+    text-align:center;
+  }
+  .goose-name-tag{
+    font-family:'Baloo 2', sans-serif;
+    font-size:0.85rem;
+    font-weight:700;
+    background:rgba(255,255,255,0.88);
+    border-radius:10px;
+    padding:2px 8px;
+    display:inline-block;
+    margin-bottom:2px;
+    box-shadow:0 2px 3px rgba(0,0,0,0.15);
+  }
+  .goose-svg-holder{
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  .goose-svg-holder.walk{
+    animation: waddle 0.7s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-4px) rotate(-1deg); }
+  }
+  @keyframes waddle{
+    0%,100%{ transform: translateY(0) rotate(-4deg); }
+    50%{ transform: translateY(-2px) rotate(4deg); }
+  }
+  .ice-block{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+  }
+  .ice-block svg{ width:150px; }
+  .frozen .goose-svg-holder{ animation:none; opacity:0.35; filter:grayscale(0.5); }
+  .frozen .ice-block{ display:flex; }
+
+  .heart, .zzz, .foodbite{
+    position:absolute;
+    font-size:1.2rem;
+    opacity:0;
+    pointer-events:none;
+  }
+
+  /* Buttons row */
+  .buttons{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-top:18px;
+  }
+  .btn{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:0.78rem;
+    border:none;
+    border-radius:16px;
+    padding:12px 4px 10px;
+    cursor:pointer;
+    color:white;
+    background:linear-gradient(180deg, var(--terracotta), var(--terracotta-dark));
+    box-shadow:0 4px 0 #9c4620, 0 6px 10px rgba(0,0,0,0.25);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    transition:transform 0.08s ease;
+  }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #9c4620; }
+  .btn.alt{ background:linear-gradient(180deg, #5FA8D3, #3D80AC); box-shadow:0 4px 0 #2c5f83, 0 6px 10px rgba(0,0,0,0.25); }
+  .btn.alt:active{ box-shadow:0 1px 0 #2c5f83; }
+  .btn.green{ background:linear-gradient(180deg, #7FBF6B, #59974A); box-shadow:0 4px 0 #3f7233, 0 6px 10px rgba(0,0,0,0.25); }
+  .btn.green:active{ box-shadow:0 1px 0 #3f7233; }
+  .btn.gold{ background:linear-gradient(180deg, var(--gold), #C98B1F); box-shadow:0 4px 0 #8f6212, 0 6px 10px rgba(0,0,0,0.25); }
+  .btn.gold:active{ box-shadow:0 1px 0 #8f6212; }
+  .btn span.icon{ font-size:1.4rem; }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; }
+
+  .message{
+    font-family:'Baloo 2', sans-serif;
+    text-align:center;
+    margin-top:12px;
+    min-height:22px;
+    font-size:0.9rem;
+    color:var(--palm-dark);
+    font-weight:600;
+  }
+
+  /* Modal */
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(20,30,20,0.55);
+    display:none; align-items:center; justify-content:center; padding:16px; z-index:50;
+  }
+  .modal-bg.show{ display:flex; }
+  .modal{
+    background:var(--shell);
+    border-radius:24px;
+    padding:22px 20px 24px;
+    width:min(420px, 100%);
+    max-height:88vh;
+    overflow-y:auto;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+    border:3px solid #d8c393;
+  }
+  .modal h2{
+    font-family:'Baloo 2', sans-serif;
+    color:var(--terracotta-dark);
+    margin-top:0;
+    text-align:center;
+  }
+  .close-x{
+    float:right;
+    background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink);
+  }
+  .question-box{
+    background:white;
+    border-radius:16px;
+    padding:16px;
+    text-align:center;
+    margin-bottom:14px;
+    font-family:'Baloo 2', sans-serif;
+    font-size:1.15rem;
+    box-shadow:inset 0 0 0 2px #eee0c0;
+  }
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .opt-btn{
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    padding:12px 6px;
+    border-radius:14px;
+    border:2px solid #d8c393;
+    background:white;
+    cursor:pointer;
+    transition:transform 0.08s ease, background 0.2s;
+  }
+  .opt-btn:hover{ background:#fff3da; }
+  .opt-btn.correct{ background:var(--happy); color:white; border-color:#4a8f3a; }
+  .opt-btn.wrong{ background:#e97b6c; color:white; border-color:#b3402f; }
+  .opt-btn:disabled{ cursor:default; }
+  .progress-row{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:0.85rem;
+    margin-bottom:10px; color:var(--palm-dark);
+  }
+  .lesson-result{
+    text-align:center; font-family:'Baloo 2', sans-serif;
+  }
+  .lesson-result .big{ font-size:2.2rem; margin:8px 0; }
+
+  /* Shop */
+  .shop-item{
+    display:flex; align-items:center; justify-content:space-between;
+    background:white; border-radius:14px; padding:10px 14px; margin-bottom:10px;
+    box-shadow:inset 0 0 0 2px #eee0c0;
+  }
+  .shop-item .info{ display:flex; align-items:center; gap:10px; font-weight:700; }
+  .shop-item .info .em{ font-size:1.5rem; }
+  .buy-btn{
+    font-family:'Baloo 2', sans-serif; font-weight:700;
+    background:var(--gold); border:none; border-radius:10px;
+    padding:8px 12px; cursor:pointer; color:#4a3300;
+  }
+  .buy-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .inventory-row{
+    text-align:center; font-family:'Baloo 2', sans-serif; margin-top:6px; color:var(--palm-dark); font-weight:700;
+  }
+  .rename-form{ display:flex; gap:8px; margin-top:6px; }
+  .rename-form input{
+    flex:1; padding:10px 12px; border-radius:12px; border:2px solid #d8c393; font-family:'Nunito'; font-size:1rem;
+  }
+  .rename-form button{
+    font-family:'Baloo 2', sans-serif; font-weight:700; background:var(--palm); color:white;
+    border:none; border-radius:12px; padding:0 16px; cursor:pointer;
+  }
+  footer{
+    margin-top:20px;
+    font-size:0.75rem;
+    color:#6b5a3a;
+    text-align:center;
+    max-width:420px;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="brand">Auca</h1>
+<p class="subtitle">🌴 l'oie du Parc Phœnix apprend le nissart avec toi 🌴</p>
+
+<div class="console">
+  <div class="screen-frame">
+    <div class="screen" id="screen">
+      <div class="hud">
+        <div class="pill">⭐ <span id="pointsDisplay">0</span></div>
+        <div class="pill">🍽️ <span id="foodDisplay">0</span></div>
+      </div>
+      <div class="hunger-bar-wrap"><div class="hunger-bar" id="hungerBar"></div></div>
+
+      <!-- decor -->
+      <div class="cloud" style="width:46px;height:16px;top:14%;left:10%;"></div>
+      <div class="cloud" style="width:36px;height:12px;top:20%;left:60%;"></div>
+      <div class="pond"></div>
+
+      <div class="goose-wrap" id="gooseWrap">
+        <div class="goose-name-tag" id="gooseNameTag">Auca</div>
+        <div class="goose-svg-holder" id="gooseHolder">
+          <svg id="gooseSvg" viewBox="-2 0 104 106" width="100" height="102"></svg>
+        </div>
+      </div>
+      <div class="ice-block" id="iceBlock">
+        <svg viewBox="0 0 120 120"><polygon points="60,5 115,40 100,110 20,110 5,40" fill="#AEE6F2" stroke="#6FC3DA" stroke-width="3" opacity="0.85"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="btn" id="btnLesson"><span class="icon">📖</span>Leçon</button>
+    <button class="btn green" id="btnFeed"><span class="icon">🌽</span>Nourrir</button>
+    <button class="btn alt" id="btnShop"><span class="icon">🛒</span>Boutique</button>
+    <button class="btn gold" id="btnRename"><span class="icon">✏️</span>Nommer</button>
+  </div>
+  <div class="message" id="message">Bonjour ! Fais une leçon de nissart pour gagner des points ⭐</div>
+</div>
+
+<footer>Auca vit au Parc Phœnix de Nice. Si tu oublies tes leçons de nissart trop longtemps, elle risque de geler dans un bloc de glace — fais une leçon pour la sauver !</footer>
+
+<!-- Lesson Modal -->
+<div class="modal-bg" id="lessonModalBg">
+  <div class="modal">
+    <button class="close-x" id="closeLesson">✕</button>
+    <h2>Leçon de nissart</h2>
+    <div class="progress-row">
+      <span id="lessonProgress">Question 1 / 5</span>
+      <span id="lessonScore">⭐ 0</span>
+    </div>
+    <div id="lessonBody"></div>
+  </div>
+</div>
+
+<!-- Shop Modal -->
+<div class="modal-bg" id="shopModalBg">
+  <div class="modal">
+    <button class="close-x" id="closeShop">✕</button>
+    <h2>Boutique du Parc Phœnix</h2>
+    <p style="text-align:center; font-weight:700; color:var(--palm-dark)">Il te faut au moins 10 ⭐ pour acheter à manger.</p>
+    <div id="shopList"></div>
+    <div class="inventory-row" id="shopBalance"></div>
+  </div>
+</div>
+
+<!-- Rename Modal -->
+<div class="modal-bg" id="renameModalBg">
+  <div class="modal">
+    <button class="close-x" id="closeRename">✕</button>
+    <h2>Donne un nom à ton oie</h2>
+    <div class="rename-form">
+      <input type="text" id="renameInput" maxlength="16" placeholder="Nom de l'oie">
+      <button id="renameSave">Valider</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DONNÉES DE VOCABULAIRE NISSART
+   ========================================================= */
+const vocab = [
+  {fr:"abeille", nc:"abelha", cat:"animal"},
+  {fr:"agneau", nc:"anhèu", cat:"animal"},
+  {fr:"ami", nc:"amic", cat:"personne"},
+  {fr:"amour", nc:"amour", cat:"sentiment"},
+  {fr:"année", nc:"an", cat:"temps"},
+  {fr:"argent", nc:"argent", cat:"objet"},
+  {fr:"bague", nc:"anèu", cat:"objet"},
+  {fr:"balai", nc:"escomba", cat:"objet"},
+  {fr:"bateau", nc:"batèu", cat:"objet"},
+  {fr:"beurre", nc:"burre", cat:"nourriture"},
+  {fr:"bijou", nc:"bijòu", cat:"objet"},
+  {fr:"blanc", nc:"blanc", cat:"couleur"},
+  {fr:"bœuf", nc:"buòu", cat:"animal"},
+  {fr:"boisson", nc:"bevenda", cat:"nourriture"},
+  {fr:"bonheur", nc:"bonur", cat:"sentiment"},
+  {fr:"bouche", nc:"boca", cat:"corps"},
+  {fr:"boutique", nc:"botiga", cat:"lieu"},
+  {fr:"bouteille", nc:"boutèlha", cat:"objet"},
+  {fr:"branche", nc:"branca", cat:"objet"},
+  {fr:"bras", nc:"braç", cat:"corps"},
+  {fr:"bureau", nc:"burèu", cat:"objet"},
+  {fr:"cabane", nc:"cabana", cat:"objet"},
+  {fr:"café", nc:"cafè", cat:"nourriture"},
+  {fr:"cage", nc:"gabia", cat:"objet"},
+  {fr:"campagne", nc:"campanha", cat:"lieu"},
+  {fr:"canard", nc:"anar", cat:"animal"},
+  {fr:"carte", nc:"carta", cat:"objet"},
+  {fr:"cerf", nc:"cèrvi", cat:"animal"},
+  {fr:"cerise", nc:"cerièra", cat:"nourriture"},
+  {fr:"chaise", nc:"cadiera", cat:"objet"},
+  {fr:"champ", nc:"camp", cat:"lieu"},
+  {fr:"chapeau", nc:"capèu", cat:"objet"},
+  {fr:"chat", nc:"gat", cat:"animal"},
+  {fr:"chemin", nc:"camin", cat:"lieu"},
+  {fr:"cheminée", nc:"caminè", cat:"objet"},
+  {fr:"cheval", nc:"cavau", cat:"animal"},
+  {fr:"chien", nc:"can", cat:"animal"},
+  {fr:"chèvre", nc:"cabra", cat:"animal"},
+  {fr:"ciel", nc:"cièl", cat:"nature"},
+  {fr:"citron", nc:"limoun", cat:"nourriture"},
+  {fr:"clair", nc:"clar", cat:"adjectif"},
+  {fr:"cloche", nc:"campana", cat:"objet"},
+  {fr:"coeur", nc:"cor", cat:"corps"},
+  {fr:"cochon", nc:"pòrc", cat:"animal"},
+  {fr:"confiture", nc:"confitura", cat:"nourriture"},
+  {fr:"coq", nc:"gau", cat:"animal"},
+  {fr:"corde", nc:"còrda", cat:"objet"},
+  {fr:"corps", nc:"còs", cat:"corps"},
+  {fr:"couteau", nc:"cotèu", cat:"objet"},
+  {fr:"cuisine", nc:"cusina", cat:"lieu"},
+  {fr:"dent", nc:"dent", cat:"corps"},
+  {fr:"dessert", nc:"dessèrt", cat:"nourriture"},
+  {fr:"douleur", nc:"doulor", cat:"sentiment"},
+  {fr:"doux", nc:"douç", cat:"adjectif"},
+  {fr:"eau", nc:"aiga", cat:"nature"},
+  {fr:"école", nc:"escola", cat:"lieu"},
+  {fr:"église", nc:"glèisa", cat:"lieu"},
+  {fr:"enfant", nc:"enfant", cat:"personne"},
+  {fr:"envie", nc:"envia", cat:"sentiment"},
+  {fr:"épée", nc:"spada", cat:"objet"},
+  {fr:"épaule", nc:"espala", cat:"corps"},
+  {fr:"été", nc:"estiu", cat:"temps"},
+  {fr:"étage", nc:"plan", cat:"lieu"},
+  {fr:"étoile", nc:"estèla", cat:"nature"},
+  {fr:"facile", nc:"facil", cat:"adjectif"},
+  {fr:"famille", nc:"familha", cat:"personne"},
+  {fr:"femme", nc:"dona", cat:"personne"},
+  {fr:"fenêtre", nc:"fenèstra", cat:"objet"},
+  {fr:"feu", nc:"fuòc", cat:"nature"},
+  {fr:"feuille", nc:"fuèlha", cat:"objet"},
+  {fr:"figue", nc:"figa", cat:"nourriture"},
+  {fr:"fille", nc:"filha", cat:"personne"},
+  {fr:"fils", nc:"filh", cat:"personne"},
+  {fr:"fleur", nc:"flour", cat:"nature"},
+  {fr:"forêt", nc:"bòsc", cat:"lieu"},
+  {fr:"fort", nc:"fòrt", cat:"adjectif"},
+  {fr:"four", nc:"forn", cat:"objet"},
+  {fr:"fourchette", nc:"forqueta", cat:"objet"},
+  {fr:"fraise", nc:"fraga", cat:"nourriture"},
+  {fr:"frère", nc:"fraire", cat:"personne"},
+  {fr:"fromage", nc:"formatge", cat:"nourriture"},
+  {fr:"froid", nc:"freg", cat:"adjectif"},
+  {fr:"fruit", nc:"frucha", cat:"nourriture"},
+  {fr:"garçon", nc:"garçon", cat:"personne"},
+  {fr:"gâteau", nc:"torta", cat:"nourriture"},
+  {fr:"goût", nc:"gust", cat:"nourriture"},
+  {fr:"grand", nc:"grand", cat:"adjectif"},
+  {fr:"guerre", nc:"guèrra", cat:"autre"},
+  {fr:"haut", nc:"aut", cat:"adjectif"},
+  {fr:"heure", nc:"ora", cat:"temps"},
+  {fr:"histoire", nc:"istòria", cat:"autre"},
+  {fr:"hiver", nc:"ièrn", cat:"temps"},
+  {fr:"homme", nc:"òme", cat:"personne"},
+  {fr:"huile", nc:"òli", cat:"nourriture"},
+  {fr:"huître", nc:"ostra", cat:"nourriture"},
+  {fr:"idée", nc:"idèa", cat:"autre"},
+  {fr:"jambe", nc:"camba", cat:"corps"},
+  {fr:"jardin", nc:"jardin", cat:"lieu"},
+  {fr:"jeune", nc:"jove", cat:"adjectif"},
+  {fr:"joie", nc:"joia", cat:"sentiment"},
+  {fr:"jour", nc:"jorn", cat:"temps"},
+  {fr:"lait", nc:"lach", cat:"nourriture"},
+  {fr:"lampe", nc:"lampa", cat:"objet"},
+  {fr:"langue", nc:"lenga", cat:"corps"},
+  {fr:"lapin", nc:"conilh", cat:"animal"},
+  {fr:"légumes", nc:"legum", cat:"nourriture"},
+  {fr:"lion", nc:"leon", cat:"animal"},
+  {fr:"lit", nc:"liech", cat:"objet"},
+  {fr:"livre", nc:"libre", cat:"objet"},
+  {fr:"long", nc:"long", cat:"adjectif"},
+  {fr:"loup", nc:"lop", cat:"animal"},
+  {fr:"lumière", nc:"lum", cat:"nature"},
+  {fr:"lune", nc:"luna", cat:"nature"},
+  {fr:"main", nc:"man", cat:"corps"},
+  {fr:"maison", nc:"casa", cat:"lieu"},
+  {fr:"marché", nc:"mercat", cat:"lieu"},
+  {fr:"mer", nc:"mar", cat:"nature"},
+  {fr:"miel", nc:"mèu", cat:"nourriture"},
+  {fr:"minute", nc:"minuta", cat:"temps"},
+  {fr:"miroir", nc:"mirau", cat:"objet"},
+  {fr:"moment", nc:"mument", cat:"temps"},
+  {fr:"monde", nc:"mond", cat:"autre"},
+  {fr:"montagne", nc:"mountagna", cat:"lieu"},
+  {fr:"mouton", nc:"moutoun", cat:"animal"},
+  {fr:"mur", nc:"mur", cat:"objet"},
+  {fr:"musique", nc:"musica", cat:"autre"},
+  {fr:"nuit", nc:"nuech", cat:"temps"},
+  {fr:"odeur", nc:"udour", cat:"autre"},
+  {fr:"œuf", nc:"uòu", cat:"nourriture"},
+  {fr:"oie", nc:"auca", cat:"animal"},
+  {fr:"oignon", nc:"ceba", cat:"nourriture"},
+  {fr:"oiseau", nc:"aucèu", cat:"animal"},
+  {fr:"olive", nc:"oliva", cat:"nourriture"},
+  {fr:"ombre", nc:"ombra", cat:"nature"},
+  {fr:"oncle", nc:"oncle", cat:"personne"},
+  {fr:"or", nc:"aur", cat:"objet"},
+  {fr:"orange", nc:"auranja", cat:"nourriture"},
+  {fr:"pain", nc:"pan", cat:"nourriture"},
+  {fr:"paix", nc:"patz", cat:"autre"},
+  {fr:"papier", nc:"papièr", cat:"objet"},
+  {fr:"parc", nc:"parc", cat:"lieu"},
+  {fr:"pensée", nc:"pensada", cat:"sentiment"},
+  {fr:"personne", nc:"persona", cat:"personne"},
+  {fr:"petit", nc:"pichin", cat:"adjectif"},
+  {fr:"peur", nc:"paur", cat:"sentiment"},
+  {fr:"pied", nc:"pè", cat:"corps"},
+  {fr:"place", nc:"plaça", cat:"lieu"},
+  {fr:"plaisir", nc:"plesi", cat:"sentiment"},
+  {fr:"pluie", nc:"plue", cat:"temps"},
+  {fr:"poisson", nc:"peis", cat:"animal"},
+  {fr:"pomme", nc:"pouma", cat:"nourriture"},
+  {fr:"porte", nc:"pòrta", cat:"objet"},
+  {fr:"raisin", nc:"rasin", cat:"nourriture"},
+  {fr:"rat", nc:"rat", cat:"animal"},
+  {fr:"repas", nc:"repais", cat:"nourriture"},
+  {fr:"rue", nc:"carrièra", cat:"lieu"},
+  {fr:"sel", nc:"sau", cat:"nourriture"},
+  {fr:"serpent", nc:"serp", cat:"animal"},
+  {fr:"soleil", nc:"solelh", cat:"nature"},
+  {fr:"soupe", nc:"sopa", cat:"nourriture"},
+  {fr:"table", nc:"taula", cat:"objet"},
+  {fr:"tante", nc:"tanta", cat:"personne"},
+  {fr:"tasse", nc:"tassa", cat:"objet"},
+  {fr:"taureau", nc:"taur", cat:"animal"},
+  {fr:"temps", nc:"temps", cat:"temps"},
+  {fr:"terre", nc:"terra", cat:"nature"},
+  {fr:"tête", nc:"testa", cat:"corps"},
+  {fr:"tomate", nc:"tomàca", cat:"nourriture"},
+  {fr:"travail", nc:"travalh", cat:"autre"},
+  {fr:"vache", nc:"vaca", cat:"animal"},
+  {fr:"veau", nc:"vedèu", cat:"animal"},
+  {fr:"vent", nc:"vent", cat:"nature"},
+  {fr:"viande", nc:"carn", cat:"nourriture"},
+  {fr:"vie", nc:"vida", cat:"autre"},
+  {fr:"vin", nc:"vin", cat:"nourriture"},
+  {fr:"visage", nc:"visatge", cat:"corps"},
+  {fr:"voix", nc:"vouè", cat:"corps"},
+  {fr:"voiture", nc:"carreta", cat:"objet"},
+  {fr:"voyage", nc:"viatge", cat:"autre"},
+  {fr:"yeux", nc:"uèlh", cat:"corps"},
+  // couleurs
+  {fr:"bleu", nc:"blu", cat:"couleur"},
+  {fr:"rose", nc:"rose", cat:"couleur"},
+  {fr:"jaune", nc:"jaune", cat:"couleur"},
+  {fr:"noir", nc:"negre", cat:"couleur"},
+  {fr:"rouge", nc:"rouge", cat:"couleur"},
+  {fr:"violet", nc:"violet", cat:"couleur"},
+  {fr:"marron", nc:"brun", cat:"couleur"},
+  {fr:"vert", nc:"vert", cat:"couleur"},
+  {fr:"pourpre", nc:"porpora", cat:"couleur"},
+  {fr:"gris", nc:"gris", cat:"couleur"},
+  // chiffres
+  {fr:"un", nc:"un", cat:"chiffre"},
+  {fr:"deux", nc:"doui", cat:"chiffre"},
+  {fr:"quatre", nc:"quatre", cat:"chiffre"},
+  {fr:"cinq", nc:"cinq", cat:"chiffre"},
+  {fr:"six", nc:"sièi", cat:"chiffre"},
+  {fr:"sept", nc:"set", cat:"chiffre"},
+  {fr:"huit", nc:"vuèch", cat:"chiffre"},
+  {fr:"neuf", nc:"nòu", cat:"chiffre"},
+  {fr:"dix", nc:"dès", cat:"chiffre"},
+  {fr:"vingt", nc:"vint", cat:"chiffre"},
+  {fr:"trente", nc:"trenta", cat:"chiffre"},
+  {fr:"cent", nc:"cent", cat:"chiffre"},
+  // jours
+  {fr:"lundi", nc:"Dilun", cat:"jour"},
+  {fr:"mardi", nc:"Dimars", cat:"jour"},
+  {fr:"mercredi", nc:"Dimècres", cat:"jour"},
+  {fr:"jeudi", nc:"Dijòu", cat:"jour"},
+  {fr:"vendredi", nc:"Divendre", cat:"jour"},
+  {fr:"samedi", nc:"Dissata", cat:"jour"},
+  {fr:"dimanche", nc:"Diménegue", cat:"jour"},
+];
+
+const FOOD_ITEMS = [
+  {id:"figa", label:"Figue", nc:"figa", emoji:"🫐", cost:4},
+  {id:"pan", label:"Pain", nc:"pan", emoji:"🍞", cost:5},
+  {id:"peis", label:"Poisson", nc:"peis", emoji:"🐟", cost:6},
+  {id:"pouma", label:"Pomme", nc:"pouma", emoji:"🍎", cost:5},
+  {id:"legum", label:"Légumes", nc:"legum", emoji:"🥕", cost:5},
+];
+
+/* =========================================================
+   ÉTAT DU JEU (persistant via localStorage)
+   ========================================================= */
+const STORAGE_KEY = "auca_save_v1";
+const DECAY_PER_HOUR = 100/26; // faim tombe à 0 en environ 26h sans manger
+const MIN_TO_SHOP = 10;
+
+function defaultState(){
+  return {
+    name: "Auca",
+    points: 0,
+    hunger: 80,
+    food: 0,
+    frozen: false,
+    lastUpdate: Date.now(),
+  };
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    const s = JSON.parse(raw);
+    return Object.assign(defaultState(), s);
+  }catch(e){
+    return defaultState();
+  }
+}
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+
+function applyTimeDecay(){
+  const now = Date.now();
+  const hours = (now - state.lastUpdate) / 3600000;
+  if(hours > 0){
+    state.hunger = Math.max(0, state.hunger - hours * DECAY_PER_HOUR);
+  }
+  state.lastUpdate = now;
+  if(state.hunger <= 0){
+    state.hunger = 0;
+    state.frozen = true;
+  }
+  saveState();
+}
+
+/* =========================================================
+   OIE — SVG et expressions
+   ========================================================= */
+function gooseInnerSVG(mood){
+  // mood: 'normal' | 'happy' | 'hungry'
+  let eyes, beak, brow="", extra = "";
+  if(mood === "happy"){
+    eyes = `<path d="M62 38 Q66 34 70 38" stroke="#2C3B3A" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    beak = `<path d="M84 46 Q97 45 98 50 Q97 55 84 54 Z" fill="#F2A83D"/>
+            <path d="M85 50 L96 50" stroke="#c97f1f" stroke-width="1" opacity="0.6"/>
+            <circle cx="87" cy="52.5" r="1" fill="#c97f1f"/>`;
+    extra = `<text x="86" y="26" font-size="13">💛</text>`;
+  } else if(mood === "hungry"){
+    eyes = `<circle cx="66" cy="38" r="3" fill="#2C3B3A"/><circle cx="67" cy="37" r="0.9" fill="#fff"/>`;
+    brow = `<path d="M60 33 Q66 30 71 33" stroke="#2C3B3A" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.55"/>`;
+    beak = `<path d="M84 47 Q98 47 98 51 Q98 55 84 53 Z" fill="#F2A83D"/>
+            <path d="M85 51 L97 51" stroke="#c97f1f" stroke-width="1" opacity="0.6"/>`;
+    extra = `<text x="80" y="18" font-size="13">💭</text>`;
+  } else {
+    eyes = `<circle cx="66" cy="38" r="3" fill="#2C3B3A"/><circle cx="67" cy="37" r="0.9" fill="#fff"/>`;
+    beak = `<path d="M84 45 Q98 44 99 49 Q98 55 84 53 Z" fill="#F2A83D"/>
+            <path d="M85 49.5 L97 49.5" stroke="#c97f1f" stroke-width="1" opacity="0.6"/>`;
+  }
+  return `
+    <!-- ombre au sol -->
+    <ellipse cx="48" cy="94" rx="30" ry="5" fill="#2C3B3A" opacity="0.12"/>
+
+    <!-- queue -->
+    <path d="M8 62 Q2 68 10 76 Q18 74 20 64 Z" fill="#F4F4F2" stroke="#D8DFDC" stroke-width="1.2"/>
+
+    <!-- corps -->
+    <ellipse cx="42" cy="66" rx="34" ry="24" fill="#FFFFFF" stroke="#D8DFDC" stroke-width="1.2"/>
+
+    <!-- aile -->
+    <path d="M26 50 Q50 48 52 74 Q34 84 20 72 Q16 60 26 50 Z" fill="#EFF3F1" stroke="#D8DFDC" stroke-width="1.2"/>
+    <path d="M28 58 Q40 58 44 70" stroke="#D8DFDC" stroke-width="1.3" fill="none" opacity="0.8"/>
+    <path d="M25 66 Q37 67 42 77" stroke="#D8DFDC" stroke-width="1.3" fill="none" opacity="0.8"/>
+
+    <!-- cou -->
+    <path d="M58 52 Q76 50 78 30 Q79 20 70 16 Q80 18 82 30 Q82 50 64 56 Z" fill="#FFFFFF" stroke="#D8DFDC" stroke-width="1.2"/>
+
+    <!-- tete -->
+    <circle cx="75" cy="40" r="15" fill="#FFFFFF" stroke="#D8DFDC" stroke-width="1.2"/>
+    ${brow}
+    ${eyes}
+    ${beak}
+
+    <!-- pattes -->
+    <path d="M34 88 L32 98" stroke="#F2A83D" stroke-width="3" stroke-linecap="round"/>
+    <path d="M32 98 L26 100 M32 98 L33 101 M32 98 L38 100" stroke="#F2A83D" stroke-width="2" stroke-linecap="round"/>
+    <path d="M54 89 L57 98" stroke="#F2A83D" stroke-width="3" stroke-linecap="round"/>
+    <path d="M57 98 L51 101 M57 98 L58 101 M57 98 L63 100" stroke="#F2A83D" stroke-width="2" stroke-linecap="round"/>
+    ${extra}
+  `;
+}
+
+let moodTimer = null;
+function setGooseMood(mood, temp){
+  document.getElementById("gooseSvg").innerHTML = gooseInnerSVG(mood);
+  if(temp){
+    clearTimeout(moodTimer);
+    moodTimer = setTimeout(()=> refreshGoose(), 2200);
+  }
+}
+
+function refreshGoose(){
+  const wrap = document.getElementById("gooseWrap");
+  document.getElementById("gooseNameTag").textContent = state.name;
+  if(state.frozen){
+    wrap.parentElement.classList.add("frozen");
+    setGooseMood("hungry");
+    document.getElementById("gooseHolder").classList.remove("walk");
+  } else {
+    wrap.parentElement.classList.remove("frozen");
+    let mood = "normal";
+    if(state.hunger < 30) mood = "hungry";
+    else if(state.hunger > 70) mood = "happy";
+    setGooseMood(mood);
+    const holder = document.getElementById("gooseHolder");
+    holder.classList.toggle("walk", mood === "happy");
+  }
+}
+
+/* =========================================================
+   AFFICHAGE GÉNÉRAL
+   ========================================================= */
+function setMessage(text){
+  document.getElementById("message").textContent = text;
+}
+
+function render(){
+  document.getElementById("pointsDisplay").textContent = state.points;
+  document.getElementById("foodDisplay").textContent = state.food;
+  const bar = document.getElementById("hungerBar");
+  bar.style.width = state.hunger + "%";
+  if(state.hunger < 30){
+    bar.style.background = "linear-gradient(90deg, #e97b6c, #d9503f)";
+  } else if(state.hunger < 65){
+    bar.style.background = "linear-gradient(90deg, #f2c94c, #f2b33d)";
+  } else {
+    bar.style.background = "linear-gradient(90deg, #7fbf6b, #b7e08a)";
+  }
+  document.getElementById("btnFeed").disabled = state.food <= 0;
+  refreshGoose();
+}
+
+function tick(){
+  applyTimeDecay();
+  render();
+}
+
+/* =========================================================
+   LEÇON
+   ========================================================= */
+let lessonState = null;
+
+function pickQuestion(usedIndices){
+  let idx;
+  do { idx = Math.floor(Math.random()*vocab.length); } while(usedIndices.has(idx));
+  usedIndices.add(idx);
+  const item = vocab[idx];
+  const direction = Math.random() < 0.5 ? "fr2nc" : "nc2fr";
+  // distractors from same category if possible
+  let pool = vocab.filter((v,i)=> i!==idx && v.cat === item.cat);
+  if(pool.length < 3) pool = vocab.filter((v,i)=> i!==idx);
+  const distractors = [];
+  const usedD = new Set();
+  while(distractors.length < 3 && usedD.size < pool.length){
+    const d = pool[Math.floor(Math.random()*pool.length)];
+    if(!usedD.has(d.nc+d.fr)){ usedD.add(d.nc+d.fr); distractors.push(d); }
+  }
+  const correctText = direction === "fr2nc" ? item.nc : item.fr;
+  const options = [correctText, ...distractors.map(d => direction === "fr2nc" ? d.nc : d.fr)];
+  // shuffle
+  for(let i=options.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [options[i],options[j]]=[options[j],options[i]]; }
+  const promptText = direction === "fr2nc"
+    ? `Comment dit-on « ${item.fr} » en nissart ?`
+    : `Que veut dire « ${item.nc} » en français ?`;
+  return {promptText, correctText, options};
+}
+
+function startLesson(){
+  lessonState = {
+    total: 5,
+    current: 0,
+    score: 0,
+    used: new Set(),
+    question: null,
+  };
+  document.getElementById("lessonModalBg").classList.add("show");
+  nextQuestion();
+}
+
+function nextQuestion(){
+  lessonState.current++;
+  if(lessonState.current > lessonState.total){
+    finishLesson();
+    return;
+  }
+  lessonState.question = pickQuestion(lessonState.used);
+  document.getElementById("lessonProgress").textContent = `Question ${lessonState.current} / ${lessonState.total}`;
+  document.getElementById("lessonScore").textContent = `⭐ ${lessonState.score}`;
+  const q = lessonState.question;
+  const body = document.getElementById("lessonBody");
+  body.innerHTML = `
+    <div class="question-box">${q.promptText}</div>
+    <div class="options">
+      ${q.options.map(o => `<button class="opt-btn" data-opt="${o.replace(/"/g,'&quot;')}">${o}</button>`).join("")}
+    </div>
+  `;
+  body.querySelectorAll(".opt-btn").forEach(btn=>{
+    btn.addEventListener("click", onAnswer);
+  });
+}
+
+function onAnswer(e){
+  const chosen = e.target.getAttribute("data-opt");
+  const q = lessonState.question;
+  const buttons = document.querySelectorAll("#lessonBody .opt-btn");
+  buttons.forEach(b=>{
+    b.disabled = true;
+    if(b.getAttribute("data-opt") === q.correctText) b.classList.add("correct");
+    else if(b === e.target) b.classList.add("wrong");
+  });
+  const isCorrect = chosen === q.correctText;
+  if(isCorrect){
+    lessonState.score++;
+    state.points++;
+    if(state.frozen){
+      state.hunger = Math.min(100, state.hunger + 6);
+      if(state.hunger > 0) { /* stays frozen until lesson ends & hunger>0 handled at finish */ }
+    }
+  }
+  saveState();
+  render();
+  setTimeout(nextQuestion, 950);
+}
+
+function finishLesson(){
+  const wasFrozen = state.frozen;
+  if(state.frozen && state.hunger > 0){
+    state.frozen = false;
+  }
+  saveState();
+  render();
+  const body = document.getElementById("lessonBody");
+  document.getElementById("lessonProgress").textContent = "Leçon terminée !";
+  document.getElementById("lessonScore").textContent = `⭐ ${lessonState.score}`;
+  let extraMsg = "";
+  if(wasFrozen && !state.frozen){
+    extraMsg = `<p>❄️➡️🌤️ ${state.name} a fondu et se sent mieux !</p>`;
+  } else if(wasFrozen){
+    extraMsg = `<p>${state.name} dégèle un peu... encore un effort !</p>`;
+  }
+  body.innerHTML = `
+    <div class="lesson-result">
+      <div class="big">${lessonState.score} / ${lessonState.total}</div>
+      <p>Tu as gagné <strong>${lessonState.score} ⭐</strong> !</p>
+      ${extraMsg}
+      <button class="btn gold" id="lessonDoneBtn" style="width:100%;">Continuer</button>
+    </div>
+  `;
+  document.getElementById("lessonDoneBtn").addEventListener("click", ()=>{
+    document.getElementById("lessonModalBg").classList.remove("show");
+    setMessage(lessonState.score === lessonState.total
+      ? "Parfait ! Tu connais bien le nissart 🎉"
+      : "Bien joué, continue à apprendre le nissart !");
+  });
+}
+
+/* =========================================================
+   BOUTIQUE
+   ========================================================= */
+function renderShop(){
+  const list = document.getElementById("shopList");
+  list.innerHTML = FOOD_ITEMS.map(item => `
+    <div class="shop-item">
+      <div class="info"><span class="em">${item.emoji}</span> ${item.label} <em style="font-weight:400;color:#8a7a55">(${item.nc})</em></div>
+      <button class="buy-btn" data-cost="${item.cost}" data-id="${item.id}" ${(state.points < MIN_TO_SHOP || state.points < item.cost) ? "disabled" : ""}>
+        ${item.cost} ⭐
+      </button>
+    </div>
+  `).join("");
+  list.querySelectorAll(".buy-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const cost = parseInt(btn.getAttribute("data-cost"),10);
+      if(state.points >= MIN_TO_SHOP && state.points >= cost){
+        state.points -= cost;
+        state.food += 1;
+        saveState();
+        render();
+        renderShop();
+        setMessage("Nourriture achetée ! Va nourrir " + state.name + " 🌽");
+      }
+    });
+  });
+  document.getElementById("shopBalance").textContent = `Tu as ${state.points} ⭐ et ${state.food} 🍽️ dans ton panier.`;
+}
+
+/* =========================================================
+   ÉVÉNEMENTS UI
+   ========================================================= */
+document.getElementById("btnLesson").addEventListener("click", startLesson);
+document.getElementById("closeLesson").addEventListener("click", ()=>{
+  document.getElementById("lessonModalBg").classList.remove("show");
+});
+
+document.getElementById("btnShop").addEventListener("click", ()=>{
+  renderShop();
+  document.getElementById("shopModalBg").classList.add("show");
+});
+document.getElementById("closeShop").addEventListener("click", ()=>{
+  document.getElementById("shopModalBg").classList.remove("show");
+});
+
+document.getElementById("btnFeed").addEventListener("click", ()=>{
+  if(state.food <= 0){
+    setMessage("Tu n'as plus de nourriture, va faire les courses à la boutique !");
+    return;
+  }
+  if(state.frozen){
+    setMessage(state.name + " est gelée ! Fais une leçon de nissart pour la sauver d'abord ❄️📖");
+    return;
+  }
+  state.food -= 1;
+  state.hunger = Math.min(100, state.hunger + 30);
+  saveState();
+  render();
+  setGooseMood("happy", true);
+  setMessage(state.name + " se régale ! Miam miam 🌽💛");
+});
+
+document.getElementById("btnRename").addEventListener("click", ()=>{
+  document.getElementById("renameInput").value = state.name;
+  document.getElementById("renameModalBg").classList.add("show");
+});
+document.getElementById("closeRename").addEventListener("click", ()=>{
+  document.getElementById("renameModalBg").classList.remove("show");
+});
+document.getElementById("renameSave").addEventListener("click", ()=>{
+  const val = document.getElementById("renameInput").value.trim();
+  if(val){
+    state.name = val.slice(0,16);
+    saveState();
+    render();
+  }
+  document.getElementById("renameModalBg").classList.remove("show");
+});
+
+[["lessonModalBg"],["shopModalBg"],["renameModalBg"]].forEach(([id])=>{
+  document.getElementById(id).addEventListener("click", (e)=>{
+    if(e.target.id === id) document.getElementById(id).classList.remove("show");
+  });
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+tick();
+setInterval(tick, 60000); // met à jour la faim chaque minute
+if(state.frozen){
+  setMessage(state.name + " a gelé pendant ton absence ! Fais vite une leçon de nissart pour la sauver ❄️");
+} else if(state.hunger < 30){
+  setMessage(state.name + " commence à avoir faim...");
+}
+</script>
+</body>
+</html>
